@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "instance_type" {
-  default = "t3.medium"
+  default = "c7i-flex.large"
 }
 
 variable "admin_cidrs" {
