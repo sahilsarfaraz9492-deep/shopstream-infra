@@ -35,6 +35,10 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_subnet" "public" {
+  lifecycle {
+    ignore_changes = [tags, tags_all]
+  }
+
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.20.1.0/24"
   availability_zone       = "us-east-1a"
