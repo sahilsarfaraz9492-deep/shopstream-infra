@@ -91,3 +91,10 @@ resource "aws_eks_node_group" "main" {
 
   depends_on = [aws_iam_role_policy_attachment.eks_node]
 }
+
+resource "aws_ec2_tag" "cluster" {
+  for_each    = { a = aws_subnet.public.id, b = aws_subnet.public_b.id }
+  resource_id = each.value
+  key         = "kubernetes.io/cluster/shopstream-eks"
+  value       = "shared"
+}
