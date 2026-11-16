@@ -35,6 +35,10 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_subnet" "public" {
+  lifecycle {
+    ignore_changes = [tags, tags_all]
+  }
+
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.20.1.0/24"
   availability_zone       = "us-east-1a"
@@ -108,25 +112,6 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-resource "aws_instance" "k3s" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.public.id
-  vpc_security_group_ids = [aws_security_group.k3s.id]
-  key_name               = aws_key_pair.k3s.key_name
-
-  root_block_device {
-    volume_size = 30
-    volume_type = "gp3"
-  }
-
-  user_data = <<-EOT
-    #!/bin/bash
-    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik --write-kubeconfig-mode 644" sh -
-  EOT
-
-  tags = { Name = "shopstream-k3s" }
-}
 
 resource "aws_ecr_repository" "repos" {
   for_each             = toset(["shopstream-orders", "shopstream-users", "shopstream-gateway"])
